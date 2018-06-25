@@ -3,7 +3,7 @@
 body {
     font-family: 'Open Sans', sans-serif;
     background-color: #FCFCFC;
-    max-width: 1290px;
+    max-width: 1440px;
     margin:0 auto;
 }
 
@@ -64,28 +64,40 @@ header {
 }
 
 .info {
-
+    color: #888;
+    word-break: break-all;
 }
 
 .name {
+    color:black;
     font-weight: bold;
     font-size: 1.125rem;
     line-height: 1.125rem;
-    padding-bottom: 0.625rem;
+    padding-bottom: 0.75rem;
 }
 
 .email {
     font-size: 1rem;
     line-height: 1rem;
-    color: #888;
     padding-bottom: 0.625rem;
 }
 
 .city {
-    color: #888;
     font-size: 1rem;
     line-height: 1rem;
 }
+
+.more {
+    font-size: 1rem;
+    line-height: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.more:last-child {
+    margin-bottom: 0;
+}
+
+/* light box */
 
 .shadow-background {
     background-color: rgba(0, 0 , 0, .7);
@@ -102,30 +114,47 @@ header {
     background:rgba(0,0,0,0.8);
 }
 .lightbox{
-    position:absolute;
-    top: 0;right: 0;left: 0;bottom: 0;
-    margin:auto;
-    padding: 0 3rem;
+    position:relative;
+    /*top: 0;right: 0;left: 0;bottom: 0;*/
+    margin:9.25rem auto;
+    padding: 3.125rem 3rem;
     z-index:1;
-    width: 100px;
-    height: 100px;
     background-color: white;
     border: lightgray 2px solid;
     border-radius: .5rem;
     box-sizing: border-box;
-    width: 456px;
-    height:500px;
+    width: 28.375rem;
+    /*height: 33.75rem;*/
+    text-align: center;
 }
 
 .lightbox .close {
     float: right;
     font-size: 1.5rem;
+    position: absolute;
+    top: 0;
+    right: 3rem;
+    cursor: pointer;
 }
+
+.lightbox img {
+    margin-bottom: 1rem;
+    border-radius: 50%;
+    width: 10.875rem;
+}
+
+.seperate-line {
+    width:100%;
+    border-bottom: #ccc 1px solid;
+    padding-top: 2.4375rem;
+    margin-bottom: 2.4375rem;
+}
+
 
 /* helper class*/
 
 .clearfix::after {
     content: " ";
-    display: table;
+    display: block;
     clear: both;
 }
