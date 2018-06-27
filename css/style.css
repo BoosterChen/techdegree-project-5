@@ -37,25 +37,31 @@ header {
     color: #fff;
 }
 
+
+/* use grid layout for employee profile*/
 .profile-grid {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto;
+    grid-column-gap: 2.5%;
+    grid-row-gap: 2rem;
 }
 
+
+/* use flex layout for profile detail */
 .profile {
     box-sizing: border-box;
     border: lightgray 2px solid;
-    width: 31%;
     padding: 1.625rem;
-    margin: .9375rem 3.5% .9375rem 0;
     display: flex;
     align-items: center;
     border-radius: .5rem;
 }
 
-.profile:nth-child(3n) {
-    margin-right: 0;
+.profile:hover {
+    box-shadow: 0 0 20px 4px lightgray;
 }
+
 
 .pic {
     width: 7.75rem;
@@ -148,6 +154,15 @@ header {
     border-bottom: #ccc 1px solid;
     padding-top: 2.4375rem;
     margin-bottom: 2.4375rem;
+}
+
+.no-result {
+    text-align: center;
+    color:black;
+    font-weight: bold;
+    font-size: 2rem;
+    line-height: 1.125rem;
+    padding-top: 3rem;
 }
 
 

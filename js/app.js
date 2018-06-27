@@ -1,4 +1,7 @@
+// all employee
 let employeeArray = [];
+// current display employee array
+let currentEmployeeArray = [];
 const stateShort = {
     "alabama":"AL", "alaska":"AK", "arizona":"AZ", "arkansas":"AR", "california":"CA", "colorado":"CO", "connecticut":"CT", "delaware":"DE", "florida":"FL", "georgia":"GA", "hawaii":"HI",
     "idaho":"IA", "illinois":"IL", "indiana":"IN", "iowa":"IA", "kansas":"KS", "kentucky":"KY", "louisiana":"LA", "maine":"ME", "maryland":"MD", "massachusetts":"MA", "michigan":"MI", "minnesota":"MN", "mississippi":"MS",
@@ -22,13 +25,16 @@ function checkStatus(response){
     }
 }
 
+// update the employee grid when current employee data is change
 function updateDirectory(employeeData){
-    if(employeeData.length === 0) return;
     const profileGrid = document.querySelector(".profile-grid");
+    // update current employy data
+    currentEmployeeArray = employeeData;
 
+    // build the profile grid html and put it in to the container
     const profileListHtml = employeeData.reduce((html, employee, index) => {
-        html += `<div class="profile" data-id="${index}">
-                    <img class="pic" src="${employee.picture.large}" data-id="${index}">
+        html += `<div class="profile" data-index="${index}">
+                    <img class="pic" src="${employee.picture.large}" data-index="${index}">
                     <div class="info">
                         <div class="name">${employee.name.first} ${employee.name.last}</div>
                         <div class="email">${employee.email}</div>
@@ -38,24 +44,28 @@ function updateDirectory(employeeData){
         return html;
     }, "");
     profileGrid.innerHTML = profileListHtml;
+    // add click event which trigger the showing of profile detail
     document.querySelectorAll(".profile-grid .profile").forEach(ele => ele.addEventListener("click", showProfileDetail));
 }
 
-// show modal window of profile detail
+// show modal window which contain the profile detail
 function showProfileDetail(e) {
-    if(isNaN(e.currentTarget.getAttribute("data-id"))) return;
+    if(isNaN(e.currentTarget.getAttribute("data-index"))) return;
 
-    updateProfileDetail(e.currentTarget.getAttribute("data-id"));
+    // update detail content and show the modal window
+    updateProfileDetail(e.currentTarget.getAttribute("data-index"));
     openProfileDetail();
 }
 
-function updateProfileDetail(id){
-    const selectEmployee = employeeArray[id];
+// update detail content by index of current display employee array
+function updateProfileDetail(index){
+    const selectEmployee = currentEmployeeArray[index];
     const birthDayRaw = new Date(selectEmployee.dob.date);
     const birthDate = birthDayRaw.getDate().toString().length === 1? "0"+birthDayRaw.getDate() : birthDayRaw.getDate();
     const birthMonth = (birthDayRaw.getMonth() + 1).toString().length === 1? "0" + (birthDayRaw.getMonth() + 1) : birthDayRaw.getMonth() + 1;
     const birthDayStr = `${birthMonth}/${birthDate}/${birthDayRaw.getFullYear()}`;
 
+    // build profile detail html and put it into the container
     const profileHtml =    `<img src="${selectEmployee.picture.large}">
                             <div class="info">
                                 <div class="name">${selectEmployee.name.first} ${selectEmployee.name.last}</div>
@@ -66,18 +76,21 @@ function updateProfileDetail(id){
                                 <div class="more">${selectEmployee.location.street}, ${stateShort[selectEmployee.location.state]} ${selectEmployee.location.postcode}</div>
                                 <div class="more">Birthday:${birthDayStr}</div>
                             </div>`;
-    document.querySelector(".profile-detail").setAttribute("data-id", id);
+    document.querySelector(".profile-detail").setAttribute("data-index", index);   //update current index here
     document.querySelector(".profile-detail").innerHTML = profileHtml;
 }
 
+// show the modal window
 function openProfileDetail(){
     const shadow =  document.querySelector(".shadow-background");
 
+    //fix the body so user can't scroll while the modal window is showing
     document.body.style.overflow = "hidden";
     shadow.style.position = "fixed";
     shadow.hidden = false;
 }
 
+// hide the modal window
 function closeProfileDetail() {
     const shadow =  document.querySelector(".shadow-background");
 
@@ -86,17 +99,17 @@ function closeProfileDetail() {
     shadow.hidden = true;
 }
 
-// show next profile
+// switch between each detail
 function switchProfileDetail(e) {
-    console.log(1111,e.key);
     const shadow =  document.querySelector(".shadow-background");
-    let id =  document.querySelector(".profile-detail").getAttribute("data-id");
+    let index =  document.querySelector(".profile-detail").getAttribute("data-index");
 
-    if(shadow.hidden === false && id != null && !isNaN(parseInt(id))){
+    // count the next index according to the pressed key and current employee array
+    if(shadow.hidden === false && index != null && !isNaN(parseInt(index))){
         if(e.key == "ArrowRight"){
-            updateProfileDetail(parseInt(id) === employeeArray.length - 1 ? 0 : parseInt(id) + 1);
+            updateProfileDetail(parseInt(index) === currentEmployeeArray.length - 1 ? 0 : parseInt(index) + 1);
         } else if (e.key == "ArrowLeft"){
-            updateProfileDetail(parseInt(id) === 0 ? employeeArray.length - 1 : parseInt(id) - 1);
+            updateProfileDetail(parseInt(index) === 0 ? currentEmployeeArray.length - 1 : parseInt(index) - 1);
         }
     }
 }
@@ -104,19 +117,23 @@ function switchProfileDetail(e) {
 // profile filter
 function profileFilter(){
     const searchWord = document.getElementById("searchKeyWord").value.trim();
-    console.log(searchWord);
+    const noResult = document.querySelector(".no-result");
+
+    // if the input is empty string, then reset the page.
+    // or filter the array and update the profile grid
     if(searchWord === ""){
-        console.log(111112222,employeeArray);
+        noResult.hidden = true;
         updateDirectory(employeeArray);
     } else {
-        let searchResult = employeeArray.filter(ele => ele.name.first.indexOf(searchWord) > 0 || ele.name.last.indexOf(searchWord) > 0);
+        let searchResult = employeeArray.filter(ele => ele.name.first.indexOf(searchWord) >= 0 || ele.name.last.indexOf(searchWord) >= 0);
+
+        noResult.hidden = searchResult.length !== 0;
         updateDirectory(searchResult);
     }
 }
 
-// fetch employee data from api
+// fetch employee data from api and update the profile grid
 function fetchEmployee(num = 12, nat = "US"){
-    console.log(num);
     fetchData(`https://randomuser.me/api/?nat=${nat}&results=${num}&format=json`)
         .then(data => {
             employeeArray = data.results;
@@ -124,14 +141,14 @@ function fetchEmployee(num = 12, nat = "US"){
         });
 }
 
+// init the page, fetch employee data and set up basic event listener
 function initPage(){
     const searchInput = document.getElementById("searchKeyWord");
     const searchButton = document.getElementById("searchBt");
     const closeButton = document.querySelector(".close");
-    const shadow =  document.querySelector(".shadow-background");
 
     fetchEmployee(12, "US");
-    // document.addEventListener("keyup", switchProfileDetail);
+    document.addEventListener("keyup", switchProfileDetail);
     searchInput.addEventListener("keyup", profileFilter);
     searchButton.addEventListener("click", profileFilter);
     closeButton.addEventListener("click", closeProfileDetail);
